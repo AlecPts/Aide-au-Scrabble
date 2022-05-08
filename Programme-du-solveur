@@ -1,0 +1,237 @@
+from os import chdir
+from itertools import product
+from tkinter import *
+import tkinter as tk
+
+'''Creation de la fenetre'''
+
+scrabble = tk.Tk()
+scrabble.title("Aide au Scrabble")
+scrabble.geometry("1920x1080")
+scrabble.config(cursor="right_ptr", bg='#eadcab')
+
+Texte1 = Label(scrabble, text='Bonjour,Quelles lettres avez vous ?',
+               bg='#eadcab',
+               height=10, font=("Courier", 30))
+
+Texte1.pack()
+
+Texte2 = Label(scrabble, text='Ecrivez en minuscules et sans espaces vos lettres. '
+                              'Cliquez ensuite sur le bouton "Valider" avant de cliquer sur le bouton "Lancer"',
+               bg='#eadcab',
+               font=("Bahnschrift SemiBold", 20))
+Texte2.pack()
+
+
+
+'''creation des textes'''
+
+recup = tk.Entry(scrabble, width=50, )
+recup.pack(pady=20)
+
+
+def recuperation():
+    lettres_donnees = recup.get()
+    '''Fonction récuperation.
+    recupere les lettres tapées par l'utilisateur on utilise la variable
+     "lettres_donnees" pour les reutiliser
+     '''
+    return lettres_donnees
+
+
+def import_mots_acceptes():  # import liste mots acceptés au scrabble
+    global os
+    chdir("/Python/liste")
+    fichier = open("mots.txt", "r")
+    infos = fichier.readlines()
+    fichier.close()
+    liste_tous_mots = []
+    for element in infos:  # decoupe les mots
+        un_mot = element.rstrip('\n')
+        lettre_mot = []
+        for i in range(0, len(un_mot)):  # découpe pour toutes les lettres
+            lettre_mot.append(un_mot[i])
+        liste_tous_mots.append(lettre_mot)
+
+    return liste_tous_mots
+
+
+def crea_mots():
+    liste_tous_mots = import_mots_acceptes()
+    lettres_recup = recuperation()
+    possibilites = [loop for loop in product(lettres_recup, repeat=len(lettres_recup))]
+    # tranforme le tuple en liste
+    liste_poss = [list(row) for row in possibilites]
+    nouv_mots = []
+    for b1 in range(len(liste_tous_mots)):
+        for b2 in range(len(liste_poss)):
+            if liste_tous_mots[b1] == liste_poss[b2] and liste_tous_mots[b1] not in nouv_mots:
+                nouv_mots.append(liste_tous_mots[b1])
+    print(nouv_mots)
+    liste_crea = nouv_mots
+
+    val_lettre = {"a": 1, "b": 3, "c": 3, "d": 2, "e": 1, "f": 4, "g": 2, "h": 4, "i": 1,
+                  "j": 8, "k": 5, "l": 1, "m": 3, "n": 1, "o": 1, "p": 3, "q": 10, "r": 1, "s": 1,
+                  "t": 1, "u": 1, "v": 4, "w": 4, "x": 8, "y": 4, "z": 10}
+    points_par_mots = []
+    for b3 in range(len(liste_crea)):
+        mot_actuel = 0
+        for b4 in range(len(liste_crea[b3])):
+            mot_actuel += val_lettre[liste_crea[b3][b4]]
+        points_par_mots.append(mot_actuel)
+
+    maxvalue = max(points_par_mots)  # valeur du mot marque + points
+    print(maxvalue)
+    maxpos = points_par_mots.index(maxvalue)  # position du mot marque + points
+    print(maxpos)
+    meilleur_mot = liste_crea[maxpos]
+    print(meilleur_mot)
+
+    soluce = tk.Tk()
+    soluce.title("Solution")
+    soluce.geometry("1920x1080")
+    soluce.config(bg='#eadcab')
+    str_meilleur_mot = ''.join(meilleur_mot)
+    Texte3 = Label(soluce, text='Le meilleur mot est '+ str_meilleur_mot+ ', il vous fait marquer '+ str(maxvalue)+
+                                ' points !',
+                   bg='#eadcab',
+                   fg="black",
+                   height=30,
+                   font=("Courier", 30))
+    Texte3.pack()
+    soluce.mainloop()
+
+
+
+'''Creation et placement du bouton valider qui s'activ quand on appuie
+et du widget entry, assigne à la fonction crea_mots'''
+
+btn = tk.Button(scrabble, height=1, width=30,
+                text="Valider", font=("Lucida Console", 15),
+                bg='#ffd133',
+                command=recuperation,
+                activeforeground="#8A3324",
+                activebackground="#eadcab", padx=15, pady=15)
+
+btn2 = tk.Button(scrabble, height=2, width=40,
+                 text="Lancer", font=("Lucida Console", 15),
+                 bg='#ffd133',
+                 command=crea_mots,
+                 activeforeground="#8A3324",
+                 activebackground="#eadcab", padx=30, pady=30)
+
+btn.pack()
+btn2.pack()
+
+# lettres donnees par tkinter
+
+
+scrabble.mainloop()
+
+'''lettres_donnees = recuperation()
+possibilites = [i for i in product(lettres_donnees, repeat=len(lettres_donnees))]
+# tranforme le tuple en liste
+liste_poss = [list(row) for row in possibilites]
+nouv_mots = []'''
+
+liste_crea = nouv_mots
+
+val_lettre = {A: 1, B: 3, C: 3, D: 2, E: 1, F: 4, G: 2, H: 4, I: 1
+    , J: 8, K: 5, M: 3, O: 1, P: 3, Q: 10, R: 1, S: 1, T: 1, U: 1,
+              W: 4, X: 8, Y: 4, Z: 10}
+print("1")
+points_par_mot = []
+for i in range(len(liste_crea)):
+    mot_actuel = 0
+    for j in range(len(liste_crea[i])):
+        mot_actuel += val_lettre[i][j]
+    points_par_mots[i] = mot_actuel
+print("2")
+maxvalue = max(points_par_mot)  # valeur du mot marque + points
+maxpos = list.index(maxvalue)  # position du mot marque + points
+
+meilleur_mot = liste_crea[maxpos]
+
+print(meilleur_mot)
+
+'''
+# pas utilisé
+#
+# sert à rien car il y a le tkinter
+def demander_lettres():  # demande lettres à l'utilisateur et met dans dico_mots
+    lettres = str(input("Quelles lettres avez vous ?"))
+    dico_mots = {}
+    compteur = 1
+    for i in lettres:  # création du dico à partir des lettres
+        nom_cle = "lettre_" + str(compteur)
+        dico_mots[nom_cle] = i
+        compteur += 1
+    return (dico_mots)  # renvoi du dico
+
+#
+#def crea_mots_marche_po():  # marche pas
+    nouv_mots = []
+    # global dico_mots
+    global liste_tous_mots
+    global lettres_donnees  # voir tkinter
+    for index, valeur in enumerate(lettres_donnees):
+        form_nouv_mots = []
+        lettre_mot_boucle = []
+        for i in valeur:
+            lettre_mot_boucle.clear()
+            print(liste_tous_mots[index])
+            print(lettres_donnees[index])
+            if (liste_tous_mots[index]) == lettres_donnees[i]:
+                lettre_mot_boucle.append(liste_tous_mots[index])
+                print("enfin")
+        nouv_mots.append(lettre_mot_boucle)
+        # print(form_nouv_mots)
+    return nouv_mots
+#
+#def isInclude(L1, L2):
+#    """Renvoie True si L2 est incluse dans L1, False sinon"""
+    # return set.issubset(set(L2), set(L1))
+#    x = L2.issubset(L1)
+#    return x
+#
+# temp = combinations_with_replacement(lettres_donnees, len(lettres_donnees)) # fait une liste de toutes les combinaisons
+# for i in list(temp):
+#     possibilites1.append(i)
+#     print(i)
+#
+#nouv_lettre = []
+#compt = 0
+# # trop long à s'executer donc je sais pas si ca marche
+# for i in range(len(liste_poss)):
+#     for j in range(len(liste_tous_mots)):
+#         #print(liste_tous_mots[j])
+#         #print(i)
+#         #print(liste_poss[i])
+#         compt = 0
+#
+#         while compt < len(liste_tous_mots[j]):
+#             while liste_poss[i][j] == liste_tous_mots[j][compt]:
+#                 if liste_poss[i][j] == liste_tous_mots[j][compt]:
+#                     compt += 1
+#                     nouv_lettre.append(liste_poss[i][j])
+#                 nouv_mots.append(nouv_lettre)
+#                 nouv_lettre.clear()
+#
+#for i in range(len(liste_poss)):
+#     for j in range(len(liste_tous_mots)):
+#         check = all(item in liste_tous_mots[j] for item in liste_poss[i])
+#         #print(liste_tous_mots[j])
+#         #print(liste_poss[i])
+#         if check:
+#             nouv_mots.append(liste_tous_mots[j])
+#
+# if check:
+#     print("Oui, list1 contient tous les éléments de list2")
+# else:
+#     print("Non, list1 ne contient pas tous les éléments de list2")
+#
+# nouv_mots2 = []
+# for i in range(len(nouv_mots)):
+#     if nouv_mots[i] in liste_tous_mots:
+#         nouv_mots[i] = nouv_mots2[i]
+'''
